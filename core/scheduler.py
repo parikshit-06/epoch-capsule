@@ -1,4 +1,3 @@
-# core/scheduler.py
 import time
 from datetime import datetime
 from typing import Optional
@@ -6,7 +5,6 @@ from core.storage import load_locked_capsules, read_encrypted_blob, mark_unlocke
 from core.encryption import decrypt_data
 from utils.keymanager import prompt_password_and_derive
 from gui.player import play_video_from_bytes, show_image_from_bytes, show_text_from_bytes
-
 
 def _display_plaintext_by_type(ctype: str, plaintext: bytes, title: Optional[str]):
     """Dispatch to appropriate player."""
@@ -17,7 +15,7 @@ def _display_plaintext_by_type(ctype: str, plaintext: bytes, title: Optional[str
     else:
         show_text_from_bytes(plaintext, title=title)
 
-def check_and_unlock():
+def check_and_unlock(auto_password: str = None):
     """
     Check DB for locked capsules whose unlock_time <= now.
     For each, prompt for password (derived key), decrypt, display, and mark unlocked.
@@ -44,7 +42,11 @@ def check_and_unlock():
         nonce = cap["nonce"]
         # prompt for password (user typed) and derive key; this returns the derived key
         try:
-            key = prompt_password_and_derive(salt)
+            if auto_password is not None:
+                from utils.keymanager import derive_key_from_password
+                key = derive_key_from_password(auto_password, salt)
+            else:
+                key = prompt_password_and_derive(salt)
         except Exception as e:
             print(f"[unlock] Password entry failed or aborted for capsule {cid}: {e}")
             continue
@@ -69,11 +71,11 @@ def check_and_unlock():
         try:
             mark_unlocked(cid)
             print(f"[unlock] Capsule {cid} marked as unlocked.")
+            notify_capsule_unlocked(title)
         except Exception as e:
             print(f"[unlock] Failed to mark capsule {cid} as unlocked: {e}")
 
-
-def auto_unlock_loop(poll_interval_seconds: int = 60):
+def auto_unlock_loop(poll_interval_seconds: int = 10, auto_password: str = None):
     """
     Run check_and_unlock() repeatedly until killed.
     Intended for `python main.py autounlock` usage (you already added that command).
@@ -83,9 +85,8 @@ def auto_unlock_loop(poll_interval_seconds: int = 60):
     try:
         while True:
             try:
-                check_and_unlock()
+                check_and_unlock(auto_password=auto_password)
             except Exception as e:
-                # log but keep loop alive
                 print(f"[autounlock] Error during check_and_unlock: {e}")
             time.sleep(poll_interval_seconds)
     except KeyboardInterrupt:

@@ -12,7 +12,8 @@ def create_secure_temp_file(contents: bytes, suffix: str = "") -> str:
     fd, path = tempfile.mkstemp(suffix=suffix)
     try:
         # set restrictive permissions (owner read/write only)
-        os.fchmod(fd, stat.S_IRUSR | stat.S_IWUSR)
+        if hasattr(os, "fchmod"):
+            os.fchmod(fd, stat.S_IRUSR | stat.S_IWUSR)
         with os.fdopen(fd, "wb") as f:
             f.write(contents)
     except Exception:

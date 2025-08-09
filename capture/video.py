@@ -1,13 +1,12 @@
-# capture/video.py
 import cv2
 import tempfile
 import os
-import io
 
 def record_video(retake_allowed=True, fps=20.0, resolution=(640, 480), max_duration=None):
     """
     Records a video from the default camera.
     Returns video bytes (MP4 format) without saving permanently.
+    Press 'q' to stop recording.
     """
     final_video_bytes = None
 

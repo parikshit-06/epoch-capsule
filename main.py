@@ -1,4 +1,3 @@
-# main.py
 import argparse
 import os
 import getpass
@@ -8,6 +7,9 @@ from core.metadata import parse_unlock_time
 from core.storage import save_capsule, init_db, check_capsules
 from utils.keymanager import derive_key_from_password
 from core.scheduler import check_and_unlock, auto_unlock_loop
+from capture.text import capture_text
+from gui.photo_gui import capture_photo_gui as capture_photo
+from gui.video_gui import record_video_gui as record_video
 
 def _derive_key_and_save(title, unlock_time, ctype, content, password):
     salt = os.urandom(16)
@@ -34,32 +36,19 @@ def create_capsule_flow():
         print("Invalid type.")
         return
 
+    # --- Use capture modules ---
     if ctype == "text":
-        print("Enter your message. Finish with a blank line:")
-        lines = []
-        while True:
-            line = input()
-            if line == "":
-                break
-            lines.append(line)
-        content = "\n".join(lines).encode("utf-8")
-    elif ctype == "video":
-        video_path = input("Provide path to video file (or leave blank to record now): ").strip()
-        if not video_path:
-            print("Recording from webcam is not implemented yet.")
-            return
-        if not os.path.isfile(video_path):
-            print("Invalid file path. Please provide a valid video file.")
-            return
-        with open(video_path, "rb") as f:
-            content = f.read()
+        content = capture_text()
     elif ctype == "photo":
-        photo_path = input("Provide path to photo file: ").strip()
-        if not os.path.isfile(photo_path):
-            print("Invalid file path. Please provide a valid photo file.")
+        content = capture_photo()
+        if content is None:
+            print("Photo capture cancelled or failed.")
             return
-        with open(photo_path, "rb") as f:
-            content = f.read()
+    elif ctype == "video":
+        content = record_video()
+        if content is None:
+            print("Video capture cancelled or failed.")
+            return
 
     password = getpass.getpass("Set a password for this capsule: ")
     if not password:
@@ -67,13 +56,20 @@ def create_capsule_flow():
         return
 
     _derive_key_and_save(title, unlock_time, ctype, content, password)
+
 def main():
     parser = argparse.ArgumentParser(prog="timecapsule")
     parser.add_argument(
         "command",
         nargs="?",
         default="help",
-        choices=["create", "unlock", "init", "help", "check", "autounlock"],  # Added autounlock
+        choices=["create", "unlock", "init", "help", "check", "autounlock"],
+    )
+    parser.add_argument(
+        "--interval", type=int, default=60, help="Polling interval for autounlock (seconds)"
+    )
+    parser.add_argument(
+        "--password", type=str, default=None, help="Password for auto-unlock (use with caution!)"
     )
     args = parser.parse_args()
 
@@ -87,7 +83,7 @@ def main():
     elif args.command == "check":
         check_capsules()
     elif args.command == "autounlock":
-        auto_unlock_loop()
+        auto_unlock_loop(poll_interval_seconds=args.interval, auto_password=args.password)
     else:
         print("Usage: python main.py [create|unlock|init|autounlock]")
         print("  create      - make a new capsule")

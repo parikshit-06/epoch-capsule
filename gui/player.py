@@ -9,28 +9,27 @@ from PIL import Image
 import tempfile
 
 def play_video_from_bytes(data: bytes, window_title: str = "TimeCapsule Video"):
-    """
-    Write bytes to a secure temp file, play with OpenCV, then wipe file.
-    """
-    # Create temp file with .mp4 suffix (or .avi depending on recording)
     path = create_secure_temp_file(data, suffix=".mp4")
     try:
-        cap = cv2.VideoCapture(path)
-        if not cap.isOpened():
-            # Try alternate container
-            cap.release()
-            raise RuntimeError("Unable to open video with OpenCV. Your system may lack codec support.")
-        cv2.namedWindow(window_title, cv2.WINDOW_NORMAL)
         while True:
-            ret, frame = cap.read()
-            if not ret:
+            cap = cv2.VideoCapture(path)
+            if not cap.isOpened():
+                cap.release()
+                raise RuntimeError("Unable to open video with OpenCV. Your system may lack codec support.")
+            cv2.namedWindow(window_title, cv2.WINDOW_NORMAL)
+            cv2.resizeWindow(window_title, 960, 720)
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                cv2.imshow(window_title, frame)
+                if cv2.waitKey(33) & 0xFF == ord('q'):
+                    break
+            cap.release()
+            cv2.destroyWindow(window_title)
+            replay = input("Replay video? (y/n): ").strip().lower()
+            if replay != "y":
                 break
-            cv2.imshow(window_title, frame)
-            # 33ms ~ 30fps; break on key 'q' or window close
-            if cv2.waitKey(33) & 0xFF == ord('q'):
-                break
-        cap.release()
-        cv2.destroyWindow(window_title)
     finally:
         secure_delete(path)
 
@@ -52,6 +51,7 @@ def show_image_from_bytes(data: bytes, window_title: str = "TimeCapsule Photo"):
         if img is None:
             raise RuntimeError("Cannot decode image for display.")
         cv2.namedWindow(window_title, cv2.WINDOW_NORMAL)
+        cv2.resizeWindow(window_title, 960, 720)
         cv2.imshow(window_title, img)
         print("Press any key in the image window to continue...")
         cv2.waitKey(0)
