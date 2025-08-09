@@ -15,7 +15,7 @@ A secure, time-locked vault for text, photo, and video messages. Encrypt content
 * Create encrypted capsules (text / photo / video)
 * Support for relative (`20s`, `1h`, `2d`) and absolute (`2025-08-09T14:00:00`) unlock times
 * AES-256-GCM encryption with PBKDF2-derived keys (per-capsule salt)
-* Local storage (SQLite + encrypted blobs) — no plaintext saved permanently
+* Local storage (SQLite + encrypted blobs) - no plaintext saved permanently
 * Manual and automatic unlock flows (`unlock`, `autounlock`)
 * Capture modules designed to record to memory (no raw file left on disk)
 
@@ -82,13 +82,13 @@ python main.py create
 
 Interactive prompts:
 
-* **Title** — name for the capsule
-* **Unlock in** — relative (e.g. `20s`, `1h`, `2d`) or absolute (`2025-08-09T14:00` or `YYYY-MM-DD HH:MM`)
-* **Type** — `text`, `photo`, or `video`
+* **Title** - name for the capsule
+* **Unlock in** - relative (e.g. `20s`, `1h`, `2d`) or absolute (`2025-08-09T14:00` or `YYYY-MM-DD HH:MM`)
+* **Type** - `text`, `photo`, or `video`
 
   * `text`: multiline input, finish with a blank line
   * `photo` / `video`: you may be prompted to provide a file path (or use live capture if enabled)
-* **Password** — used to derive encryption key (you’ll need it to decrypt)
+* **Password** - used to derive encryption key (you’ll need it to decrypt)
 
 After finishing you should see:
 
@@ -165,7 +165,7 @@ python main.py autounlock --password \<YOURPASSWORD\>
 * No plaintext is stored permanently by the app (only encrypted blobs).
 * The app uses authenticated encryption (AES-GCM) to detect tampering.
 * Passwords are not stored by default. If you enable headless auto-unlock you must handle password storage securely (OS keychain recommended).
-* Secure deletion of temporary files is *best-effort* — some filesystems or OS caches might still retain data.
+* Secure deletion of temporary files is *best-effort* - some filesystems or OS caches might still retain data.
 
 ---
 
@@ -182,17 +182,17 @@ python main.py autounlock --password \<YOURPASSWORD\>
 
 * Implementations live in:
 
-  * `capture/` — capture modules (video/photo/text)
-  * `core/` — encryption, storage, scheduler, metadata
-  * `gui/` — secure player (optional)
-  * `utils/` — key manager, secure temp
+  * `capture/` - capture modules (video/photo/text)
+  * `core/` - encryption, storage, scheduler, metadata
+  * `gui/` - secure player (optional)
+  * `utils/` - key manager, secure temp
 * Want to help? Open a PR, describe the change, and include tests.
 
 ---
 
 ## License & Contact
 
-* MIT License — See LICENSE for details.
+* MIT License - See LICENSE for details.
 * This project lives at: [https://github.com/parikshit-06/epoch-capsule](https://github.com/parikshit-06/epoch-capsule)
 ---
 
