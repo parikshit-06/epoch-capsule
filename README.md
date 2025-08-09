@@ -192,8 +192,8 @@ python main.py autounlock --password \<YOURPASSWORD\>
 
 ## License & Contact
 
-MIT License — See LICENSE for details.
-This project lives at: [https://github.com/parikshit-06/epoch-capsule](https://github.com/parikshit-06/epoch-capsule)
+* MIT License — See LICENSE for details.
+* This project lives at: [https://github.com/parikshit-06/epoch-capsule](https://github.com/parikshit-06/epoch-capsule)
 ---
 
 ## Contributing
