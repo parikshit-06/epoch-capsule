@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from datetime import datetime
 from core.storage import init_db, check_capsules, DB_PATH
 import sqlite3
 import os

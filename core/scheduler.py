@@ -6,6 +6,22 @@ from core.encryption import decrypt_data
 from utils.keymanager import prompt_password_and_derive
 from gui.player import play_video_from_bytes, show_image_from_bytes, show_text_from_bytes
 
+# Optional: Desktop notifications and sound alerts
+try:
+    from win10toast import ToastNotifier
+    toaster = ToastNotifier()
+except ImportError:
+    toaster = None
+
+def notify_capsule_unlocked(title):
+    if toaster:
+        toaster.show_toast("TimeCapsule Unlocked!", f"Capsule '{title}' is ready.", duration=5)
+    try:
+        import winsound
+        winsound.MessageBeep()
+    except Exception:
+        pass
+
 def _display_plaintext_by_type(ctype: str, plaintext: bytes, title: Optional[str]):
     """Dispatch to appropriate player."""
     if ctype == "video":

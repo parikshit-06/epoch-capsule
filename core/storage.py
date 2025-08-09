@@ -1,6 +1,5 @@
 # core/storage.py
 import sqlite3
-import os
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict, Any

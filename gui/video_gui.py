@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 import cv2
 from PIL import Image, ImageTk
-import threading
 import tempfile
 import os
 

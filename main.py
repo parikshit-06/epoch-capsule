@@ -2,7 +2,7 @@ import argparse
 import os
 import getpass
 from datetime import datetime
-from core.encryption import encrypt_data, decrypt_data
+from core.encryption import encrypt_data
 from core.metadata import parse_unlock_time
 from core.storage import save_capsule, init_db, check_capsules
 from utils.keymanager import derive_key_from_password

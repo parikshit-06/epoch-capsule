@@ -1,12 +1,7 @@
 # gui/player.py
 import cv2
-import time
-import os
 from utils.secure_temp import create_secure_temp_file, secure_delete
-from datetime import datetime
 from typing import Optional
-from PIL import Image
-import tempfile
 
 def play_video_from_bytes(data: bytes, window_title: str = "TimeCapsule Video"):
     path = create_secure_temp_file(data, suffix=".mp4")
