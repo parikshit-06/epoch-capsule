@@ -1,0 +1,5 @@
+venv
+data
+core/__pycache__
+gui/__pycache__
+utils/__pycache__
